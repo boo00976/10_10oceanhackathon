@@ -1,0 +1,10 @@
+[project]
+name = "ocean-event"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "gfw-api-python-client>=1.4.0",
+    "python-dotenv>=1.2.4",
+]
