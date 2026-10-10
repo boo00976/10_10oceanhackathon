@@ -1,1 +1,93 @@
 @import "tailwindcss";
+
+/* Persona 5 / P5X Themed Utility Styles */
+:root {
+  --p5-red: #e60012;
+  --p5-crimson: #ba000d;
+  --p5-dark-red: #8b0008;
+  --p5-yellow: #ffe600;
+  --p5-black: #0c0c0c;
+  --p5-gray: #1e1e1e;
+  --p5-white: #ffffff;
+}
+
+body {
+  background-color: #0b0b0d;
+  color: #f5f5f5;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(230, 0, 18, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(255, 230, 0, 0.04) 0%, transparent 40%),
+    linear-gradient(135deg, #0b0b0d 0%, #121216 100%);
+  background-attachment: fixed;
+  font-family: 'Plus Jakarta Sans', 'Noto Sans TC', sans-serif;
+  overflow-x: hidden;
+}
+
+/* P5 Diagonal Stripe Texture */
+.p5-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(230, 0, 18, 0.08),
+    rgba(230, 0, 18, 0.08) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+.p5-stripes-dark {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.03),
+    rgba(255, 255, 255, 0.03) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+}
+
+/* P5 Halftone Dots */
+.p5-dots {
+  background-image: radial-gradient(rgba(230, 0, 18, 0.2) 1.5px, transparent 1.5px);
+  background-size: 10px 10px;
+}
+
+/* P5 Hard Box Shadows */
+.p5-shadow {
+  box-shadow: 4px 4px 0px #000000, 6px 6px 0px rgba(230, 0, 18, 0.4);
+}
+
+.p5-shadow-red {
+  box-shadow: 4px 4px 0px #e60012, 7px 7px 0px #000000;
+}
+
+.p5-shadow-yellow {
+  box-shadow: 4px 4px 0px #ffe600, 6px 6px 0px #000000;
+}
+
+/* P5 Polygonal Chamfer Angle Cuts */
+.p5-cut-corner {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 14px) 0,
+    100% 14px,
+    100% 100%,
+    14px 100%,
+    0 calc(100% - 14px)
+  );
+}
+
+.p5-cut-badge {
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    calc(100% - 10px) 100%,
+    0 100%
+  );
+}
+
+.p5-slant {
+  transform: skewX(-8deg);
+}
+
+.p5-slant-reverse {
+  transform: skewX(8deg);
+}

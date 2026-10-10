@@ -26,6 +26,7 @@ export interface FishSpecies {
   scientific_name?: string;
   gear_type?: string;
   keelung_relevance?: string;
+  north_south_names?: string; // 北部/南部簡短俗名對照
 }
 
 export interface MarketInfo {

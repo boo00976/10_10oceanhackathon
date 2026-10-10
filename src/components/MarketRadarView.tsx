@@ -1,21 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { FishPriceRecord, MarketInfo, FishSpecies } from '../types/fishery';
-import { TrendingUp, AlertTriangle, ArrowUpRight, ArrowDownRight, Fish, MapPin, Calendar, Download, Scale, ShieldCheck } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Fish, MapPin, Calendar, Download, Scale, ShieldAlert, Zap, Compass, Calculator } from 'lucide-react';
 
 interface MarketRadarViewProps {
   prices: FishPriceRecord[];
   markets: MarketInfo[];
   species: FishSpecies[];
-  demoMode: boolean;
-  onOpenAiAdvisor: (fishName: string, promptType: string) => void;
 }
 
 export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
   prices,
   markets,
   species,
-  demoMode,
-  onOpenAiAdvisor,
 }) => {
   const [selectedFishId, setSelectedFishId] = useState<string>('1010'); // Default: 白帶魚
   const [selectedRangeDays, setSelectedRangeDays] = useState<number>(14);
@@ -87,17 +83,17 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
     };
   }, [latestKeelungRecord, marketDateMap, latestDate]);
 
-  // Detect recent anomalies
+  // Detect recent anomalies (Z-score algorithm)
   const recentAnomalies = useMemo(() => {
     return currentFishRecords
       .filter((r) => r.anomaly_flag !== 'NORMAL')
       .sort((a, b) => b.trade_date.localeCompare(a.trade_date));
   }, [currentFishRecords]);
 
-  // SVG Chart Dimensions & Math
+  // SVG Chart Dimensions
   const chartWidth = 840;
-  const chartHeight = 280;
-  const padding = { top: 25, right: 35, bottom: 40, left: 55 };
+  const chartHeight = 290;
+  const padding = { top: 30, right: 35, bottom: 45, left: 60 };
   const innerWidth = chartWidth - padding.left - padding.right;
   const innerHeight = chartHeight - padding.top - padding.bottom;
 
@@ -111,7 +107,6 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
     });
     if (min === Infinity) min = 50;
     if (max === -Infinity) max = 300;
-    // Add 10% breathing space
     const range = max - min;
     return {
       minPrice: Math.max(0, Math.floor(min - range * 0.1)),
@@ -130,14 +125,14 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
     return padding.top + innerHeight - ratio * innerHeight;
   };
 
-  // Color mapping for markets
+  // P5X Signature Palette for Markets
   const marketColors: Record<string, string> = {
-    KL01: '#00f0ff', // Cyan (Keelung)
-    IL01: '#38bdf8', // Light blue (Suao)
-    PT01: '#f59e0b', // Amber (Donggang)
-    KH01: '#ec4899', // Pink (Kaohsiung)
-    PH01: '#10b981', // Emerald (Penghu)
-    TC01: '#a855f7', // Purple (Taichung)
+    KL01: '#e60012', // P5 Crimson Red (Keelung Anchor)
+    IL01: '#ffe600', // Acid Yellow (Suao)
+    PT01: '#ffffff', // Stark White (Donggang)
+    KH01: '#00e5ff', // Neon Cyan (Kaohsiung)
+    PH01: '#00e676', // Acid Green (Penghu)
+    TC01: '#ff007f', // Magenta (Taichung)
   };
 
   // Export current table view to CSV
@@ -150,95 +145,115 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `FishData-TW_${currentFish.name}_行情報表_${latestDate}.csv`;
+    a.download = `FishData-P5X_${currentFish.name}_行情_${latestDate}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   return (
     <div className="space-y-6">
-      {/* Pilot Header & Species Select Bar */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      {/* P5X Hero Header Banner */}
+      <div className="bg-[#121216] border-2 border-[#e60012] p-5 relative overflow-hidden shadow-[6px_6px_0px_#000000]">
+        <div className="absolute top-0 right-0 w-64 h-full p5-stripes pointer-events-none opacity-40" />
+
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-zinc-800 relative z-10">
           <div>
-            <div className="flex items-center gap-2 text-xs text-cyan-400 font-mono mb-1">
-              <MapPin className="w-3.5 h-3.5" />
-              <span>基隆市場錨定觀測 · 崁仔頂夜市集散中心</span>
-              <span>·</span>
-              <span>每日上午 08:00 自動更新</span>
+            <div className="flex items-center gap-2 text-xs font-mono mb-1">
+              <span className="bg-[#e60012] text-black font-black px-1.5 py-0.2 -skew-x-12">
+                MARKET RADAR // 01
+              </span>
+              <span className="text-[#ffe600] font-black">
+                基隆崁仔頂／八斗子高頻行情
+              </span>
+              <span className="text-zinc-500">·</span>
+              <span className="text-zinc-400 font-mono">08:00 AM UPDATE</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-              <span>批發交易行情與跨市場比價雷達</span>
-              {demoMode && (
-                <span className="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded font-normal">
-                  Demo: 評審關注指標
-                </span>
-              )}
-            </h2>
+            <h1 className="text-2xl sm:text-3xl font-black italic tracking-tighter text-white font-['Plus_Jakarta_Sans'] uppercase">
+              批發交易行情與跨市場比價雷達
+            </h1>
+            <p className="text-xs text-zinc-400 mt-1">
+              鎖定北部沿近海能捕撈之主力魚種 · 結合前一交易日漲跌與 Z-Score 統計預警算法。
+            </p>
           </div>
 
-          {/* Time range selector */}
+          {/* Time range selector & Export */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400">觀測區間：</span>
-            <div className="inline-flex p-1 bg-slate-950 rounded-lg border border-slate-800 text-xs font-medium">
+            <span className="text-xs font-mono font-bold text-zinc-400 uppercase">TIME RANGE:</span>
+            <div className="inline-flex bg-black p-1 border border-zinc-700">
               {[7, 14, 24].map((days) => (
                 <button
                   key={days}
                   onClick={() => setSelectedRangeDays(days)}
-                  className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
+                  className={`px-3 py-1 text-xs font-black transition-all cursor-pointer ${
                     selectedRangeDays === days
-                      ? 'bg-cyan-500 text-slate-950 font-bold shadow'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-[#e60012] text-white shadow-[2px_2px_0px_#ffffff]'
+                      : 'text-zinc-400 hover:text-white'
                   }`}
                 >
-                  最近 {days} 天
+                  {days} DAYS
                 </button>
               ))}
             </div>
             <button
               onClick={handleExportCsv}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-lg border border-slate-700 transition cursor-pointer"
-              title="下載標準化 CSV 數據"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1f1f25] hover:bg-[#e60012] hover:text-white text-zinc-200 text-xs font-black border border-zinc-700 transition cursor-pointer -skew-x-6"
             >
-              <Download className="w-3.5 h-3.5 text-cyan-400" />
-              <span>匯出 CSV</span>
+              <Download className="w-3.5 h-3.5 text-[#ffe600]" />
+              <span>EXPORT CSV</span>
             </button>
           </div>
         </div>
 
-        {/* Species Horizontal Selector */}
-        <div className="pt-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-400 tracking-wider uppercase">
-              選擇重點監測魚種（基隆沿近海主力水產）
+        {/* Species Horizontal Selector with Concise North/South Naming (P5X Style) */}
+        <div className="pt-4 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+            <span className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
+              <span className="w-2 h-3 bg-[#e60012] inline-block -skew-x-12" />
+              <span>北部能捕撈之主力魚種（簡短南北叫法）：</span>
             </span>
-            <span className="text-xs text-cyan-400 font-mono">
-              FAO代碼：{currentFish.fao_code || 'N/A'} · {currentFish.scientific_name}
-            </span>
+            {currentFish.north_south_names && (
+              <span className="text-xs bg-black text-[#ffe600] border border-[#ffe600] px-2 py-0.5 font-mono font-bold -skew-x-6">
+                當前魚種叫法：{currentFish.north_south_names}
+              </span>
+            )}
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
             {species.map((fish) => {
               const isSelected = fish.id === selectedFishId;
               return (
                 <button
                   key={fish.id}
                   onClick={() => setSelectedFishId(fish.id)}
-                  className={`flex flex-col text-left p-2.5 rounded-xl border transition-all cursor-pointer ${
+                  className={`flex flex-col text-left p-3 border transition-all cursor-pointer relative ${
                     isSelected
-                      ? 'bg-cyan-950/80 border-cyan-400 text-white shadow-lg shadow-cyan-950/50'
-                      : 'bg-slate-950/60 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-900'
+                      ? 'bg-[#e60012] text-white border-white shadow-[4px_4px_0px_#ffffff]'
+                      : 'bg-[#18181c] border-zinc-800 text-zinc-300 hover:border-[#e60012] hover:bg-[#202026]'
                   }`}
                 >
                   <div className="flex items-center justify-between w-full mb-1">
-                    <span className="font-bold text-sm truncate">{fish.name}</span>
-                    <Fish className={`w-3.5 h-3.5 ${isSelected ? 'text-cyan-400' : 'text-slate-500'}`} />
+                    <span className="font-black text-sm tracking-tight text-white">{fish.name}</span>
+                    <Fish className={`w-3.5 h-3.5 ${isSelected ? 'text-[#ffe600]' : 'text-zinc-500'}`} />
                   </div>
-                  <div className="text-[10px] text-slate-400 truncate">
-                    {fish.category}
-                  </div>
-                  <div className="text-[10px] text-cyan-300 font-mono mt-1">
-                    {fish.esg_status.split('/')[0]}
+
+                  {/* Concise Northern vs Southern Name Pill */}
+                  {fish.north_south_names && (
+                    <div
+                      className={`text-[11px] font-bold font-mono px-1.5 py-0.5 my-0.5 truncate ${
+                        isSelected
+                          ? 'bg-black text-[#ffe600]'
+                          : 'bg-black/60 text-[#ffe600] border border-zinc-800'
+                      }`}
+                    >
+                      {fish.north_south_names}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between text-[10px] text-zinc-400 mt-1 font-mono">
+                    <span className="truncate">{fish.category.split(' ')[0]}</span>
+                    <span className={isSelected ? 'text-white font-bold' : 'text-zinc-500'}>
+                      {fish.esg_status.split('/')[0]}
+                    </span>
                   </div>
                 </button>
               );
@@ -247,175 +262,172 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
         </div>
       </div>
 
-      {/* KPI Cards Row */}
+      {/* KPI Cards Row (P5X Bold Angled Stats) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Keelung Auction Price */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4.5 relative overflow-hidden">
-          <div className="text-xs text-slate-400 flex items-center justify-between mb-2">
-            <span>基隆市場 今日拍賣均價</span>
-            <span className="text-[11px] font-mono text-cyan-400">KL01 崁仔頂</span>
+        <div className="bg-[#121216] border-2 border-zinc-800 hover:border-[#e60012] p-4.5 relative overflow-hidden shadow-[4px_4px_0px_#000000] transition-colors">
+          <div className="flex items-center justify-between text-xs font-mono text-zinc-400 mb-2">
+            <span className="font-bold text-white uppercase">// KEELUNG AUCTION PRICE</span>
+            <span className="bg-[#e60012] text-white px-1.5 py-0.2 text-[10px] font-black font-mono">
+              KL01 崁仔頂
+            </span>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-white font-['JetBrains_Mono']">
+            <span className="text-3xl font-black text-white font-mono tracking-tighter">
               NT$ {keelungAvgPrice}
             </span>
-            <span className="text-xs text-slate-400">/ 公斤</span>
+            <span className="text-xs text-zinc-400 font-mono">/ KG</span>
           </div>
-          <div className="mt-2 flex items-center gap-2 text-xs">
+          <div className="mt-2 flex items-center gap-2 text-xs font-mono font-bold">
             <span
-              className={`flex items-center font-semibold ${
-                priceChange >= 0 ? 'text-rose-400' : 'text-emerald-400'
+              className={`flex items-center px-1.5 py-0.2 ${
+                priceChange >= 0
+                  ? 'bg-[#e60012] text-white'
+                  : 'bg-[#00e676] text-black font-black'
               }`}
             >
               {priceChange >= 0 ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
               {priceChange >= 0 ? `+${priceChange}` : priceChange} ({priceChangePct}%)
             </span>
-            <span className="text-slate-500">較前一日</span>
+            <span className="text-zinc-500 text-[11px]">較前一有效交易日</span>
           </div>
-          <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 rounded-full blur-xl pointer-events-none" />
         </div>
 
         {/* Card 2: Daily Volume */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4.5 relative overflow-hidden">
-          <div className="text-xs text-slate-400 flex items-center justify-between mb-2">
-            <span>今日到港交易量</span>
-            <span className="text-[11px] text-slate-400">批發量</span>
+        <div className="bg-[#121216] border-2 border-zinc-800 hover:border-[#e60012] p-4.5 relative overflow-hidden shadow-[4px_4px_0px_#000000] transition-colors">
+          <div className="flex items-center justify-between text-xs font-mono text-zinc-400 mb-2">
+            <span className="font-bold text-white uppercase">// DAILY VOLUME</span>
+            <span className="text-[10px] text-zinc-500 font-mono">批發到港量</span>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-white font-['JetBrains_Mono']">
+            <span className="text-3xl font-black text-white font-mono tracking-tighter">
               {keelungVolume.toLocaleString()}
             </span>
-            <span className="text-xs text-slate-400">公斤 (kg)</span>
+            <span className="text-xs text-zinc-400 font-mono">KG</span>
           </div>
-          <div className="mt-2 text-xs text-slate-400 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span>供貨穩定度良好 · 正常漁獲靠港</span>
+          <div className="mt-2 text-xs font-mono flex items-center gap-1.5 text-zinc-400">
+            <span className="w-2 h-2 bg-[#00e676] inline-block" />
+            <span className="text-[11px]">正常靠港卸魚量 · 供需均衡</span>
           </div>
         </div>
 
         {/* Card 3: Arbitrage Spread */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4.5 relative overflow-hidden">
-          <div className="text-xs text-slate-400 flex items-center justify-between mb-2">
-            <span>跨市場最大價差 (套利監測)</span>
-            <Scale className="w-3.5 h-3.5 text-amber-400" />
+        <div className="bg-[#121216] border-2 border-zinc-800 hover:border-[#ffe600] p-4.5 relative overflow-hidden shadow-[4px_4px_0px_#000000] transition-colors">
+          <div className="flex items-center justify-between text-xs font-mono text-zinc-400 mb-2">
+            <span className="font-bold text-white uppercase">// ARBITRAGE SPREAD</span>
+            <Scale className="w-4 h-4 text-[#ffe600]" />
           </div>
           {arbitrageAnalysis ? (
             <div>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-amber-300 font-['JetBrains_Mono']">
+                <span className="text-3xl font-black text-[#ffe600] font-mono tracking-tighter">
                   +NT$ {arbitrageAnalysis.diff}
                 </span>
-                <span className="text-xs text-amber-400/80 font-mono">({arbitrageAnalysis.diffPct}%)</span>
+                <span className="text-xs text-[#ffe600] font-mono font-bold">({arbitrageAnalysis.diffPct}%)</span>
               </div>
-              <div className="mt-2 text-xs text-slate-300 truncate">
-                基隆比 <span className="text-white font-semibold">{arbitrageAnalysis.lowestMarket}</span> 高出
+              <div className="mt-2 text-xs font-mono text-zinc-300 truncate">
+                基隆高於 <span className="text-white font-black">{arbitrageAnalysis.lowestMarket.split(' (')[0]}</span>
               </div>
             </div>
           ) : (
-            <div className="text-xs text-slate-500">計算比對中...</div>
+            <div className="text-xs text-zinc-500 font-mono">計算比對中...</div>
           )}
         </div>
 
-        {/* Card 4: Anomaly Alert Indicator */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4.5 relative overflow-hidden">
-          <div className="text-xs text-slate-400 flex items-center justify-between mb-2">
-            <span>時序波動異常警示 (Z-Score)</span>
-            <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+        {/* Card 4: Z-Score Anomaly Indicator */}
+        <div className="bg-[#121216] border-2 border-zinc-800 hover:border-[#e60012] p-4.5 relative overflow-hidden shadow-[4px_4px_0px_#000000] transition-colors">
+          <div className="flex items-center justify-between text-xs font-mono text-zinc-400 mb-2">
+            <span className="font-bold text-white uppercase">// Z-SCORE VOLATILITY</span>
+            <ShieldAlert className="w-4 h-4 text-[#e60012]" />
           </div>
           <div className="flex items-baseline gap-2">
             {recentAnomalies.length > 0 ? (
-              <span className="text-2xl font-bold text-rose-400 flex items-center gap-1">
-                <AlertTriangle className="w-5 h-5 text-rose-400" />
-                <span>{recentAnomalies.length} 處警示</span>
+              <span className="text-2xl font-black text-[#e60012] font-mono tracking-tight flex items-center gap-1">
+                <Zap className="w-5 h-5 text-[#e60012] fill-current" />
+                <span>{recentAnomalies.length} ALERTS</span>
               </span>
             ) : (
-              <span className="text-2xl font-bold text-emerald-400 font-mono">
-                安全 (Normal)
+              <span className="text-2xl font-black text-[#00e676] font-mono tracking-tight">
+                NORMAL (95%)
               </span>
             )}
           </div>
-          <div className="mt-2 text-xs text-slate-400 truncate">
+          <div className="mt-2 text-xs font-mono text-zinc-400 truncate">
             {recentAnomalies.length > 0
-              ? `${recentAnomalies[0].trade_date} 檢測到偏離常態 > 2.5σ`
-              : '過去 14 天價格於 95% 置信區間'}
+              ? `${recentAnomalies[0].trade_date} 偏離基線 > 2.5σ`
+              : '過去 14 天價格於標準差區間內'}
           </div>
         </div>
       </div>
 
-      {/* Main Interactive Chart Section */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+      {/* Main Interactive Chart Section (P5X Black/Red/Yellow Visuals) */}
+      <div className="bg-[#121216] border-2 border-zinc-800 p-5 shadow-[6px_6px_0px_#000000]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-3 border-b border-zinc-800">
           <div className="flex items-center gap-3">
-            <h3 className="font-bold text-white text-base">
-              {currentFish.name} 行情時序趨勢圖
+            <div className="w-3 h-5 bg-[#e60012] -skew-x-12" />
+            <h3 className="font-black text-white text-base tracking-tight font-mono uppercase">
+              {currentFish.name} // 價格時序趨勢雷達
             </h3>
-            <div className="inline-flex p-1 bg-slate-950 rounded-lg border border-slate-800 text-xs font-medium">
-              <button
-                onClick={() => setActiveChartTab('compare')}
-                className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
-                  activeChartTab === 'compare'
-                    ? 'bg-cyan-500 text-slate-950 font-bold'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                跨市場均價對比 (All Markets)
-              </button>
-              <button
-                onClick={() => setActiveChartTab('band')}
-                className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
-                  activeChartTab === 'band'
-                    ? 'bg-cyan-500 text-slate-950 font-bold'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                基隆市場 上/中/下價區間帶
-              </button>
-            </div>
           </div>
 
-          {/* AI Quick Diagnosis Trigger */}
-          <button
-            onClick={() => onOpenAiAdvisor(currentFish.name, 'MARKET_ANALYSIS')}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 text-xs font-medium rounded-lg border border-cyan-800/80 transition cursor-pointer self-start sm:self-auto"
-          >
-            <span>🤖 AI 深度診斷此魚種產銷波動成因</span>
-          </button>
+          <div className="inline-flex bg-black p-1 border border-zinc-700">
+            <button
+              onClick={() => setActiveChartTab('compare')}
+              className={`px-3 py-1 text-xs font-black transition-all cursor-pointer ${
+                activeChartTab === 'compare'
+                  ? 'bg-[#e60012] text-white shadow-[2px_2px_0px_#ffffff]'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              跨市場均價對比 (ALL MARKETS)
+            </button>
+            <button
+              onClick={() => setActiveChartTab('band')}
+              className={`px-3 py-1 text-xs font-black transition-all cursor-pointer ${
+                activeChartTab === 'band'
+                  ? 'bg-[#e60012] text-white shadow-[2px_2px_0px_#ffffff]'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              基隆 上/中/下價區間帶
+            </button>
+          </div>
         </div>
 
         {/* Legend */}
         {activeChartTab === 'compare' ? (
-          <div className="flex flex-wrap items-center gap-4 text-xs mb-3 text-slate-300">
+          <div className="flex flex-wrap items-center gap-4 text-xs font-mono mb-4 text-zinc-300">
             {markets.map((m) => (
               <div key={m.id} className="flex items-center gap-1.5">
                 <span
-                  className="w-3 h-3 rounded-full"
+                  className="w-3 h-3 -skew-x-12"
                   style={{ backgroundColor: marketColors[m.id] || '#94a3b8' }}
                 />
-                <span className={m.id === 'KL01' ? 'font-bold text-white' : ''}>
-                  {m.name.split(' (')[0]} {m.id === 'KL01' && '(試點核心)'}
+                <span className={m.id === 'KL01' ? 'font-black text-[#e60012]' : ''}>
+                  {m.name.split(' (')[0]} {m.id === 'KL01' && '(基隆核心)'}
                 </span>
               </div>
             ))}
           </div>
         ) : (
-          <div className="flex items-center gap-4 text-xs mb-3 text-slate-300">
+          <div className="flex items-center gap-5 text-xs font-mono mb-4 text-zinc-300">
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-1 bg-rose-400 rounded" />
-              <span>上價 (高檔優質鮮魚)</span>
+              <span className="w-3 h-3 bg-[#e60012]" />
+              <span className="font-bold text-white">上價 (頂級鮮貨)</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-1 bg-cyan-400 rounded" />
-              <span>平均價 (拍賣成交均價)</span>
+              <span className="w-3 h-3 bg-[#ffe600]" />
+              <span className="font-bold text-white">平均價 (成交均價)</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-1 bg-blue-400 rounded" />
-              <span>下價 (加工或次級品)</span>
+              <span className="w-3 h-3 bg-[#00e5ff]" />
+              <span className="font-bold text-white">下價 (加工或次級)</span>
             </div>
           </div>
         )}
 
         {/* SVG Responsive Container */}
-        <div className="relative overflow-x-auto">
+        <div className="relative overflow-x-auto bg-[#0a0a0c] p-2 border border-zinc-800">
           <svg
             viewBox={`0 0 ${chartWidth} ${chartHeight}`}
             className="w-full h-auto min-w-[700px] select-none"
@@ -431,17 +443,18 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
                     y1={y}
                     x2={chartWidth - padding.right}
                     y2={y}
-                    stroke="#1e293b"
+                    stroke="#222228"
                     strokeDasharray="4 4"
                     strokeWidth="1"
                   />
                   <text
-                    x={padding.left - 8}
+                    x={padding.left - 10}
                     y={y + 4}
-                    fill="#64748b"
+                    fill="#777785"
                     fontSize="10"
                     textAnchor="end"
                     fontFamily="monospace"
+                    fontWeight="bold"
                   >
                     NT${priceAtY}
                   </text>
@@ -451,7 +464,6 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
 
             {/* Date X-Axis */}
             {sortedDates.map((date, idx) => {
-              // Only show alternate labels if too dense
               if (sortedDates.length > 10 && idx % 2 !== 0 && idx !== sortedDates.length - 1) return null;
               const x = getX(idx);
               const isHovered = hoveredDate === date;
@@ -461,17 +473,18 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
                     x1={x}
                     y1={padding.top + innerHeight}
                     x2={x}
-                    y2={padding.top + innerHeight + 5}
-                    stroke="#334155"
-                    strokeWidth="1"
+                    y2={padding.top + innerHeight + 6}
+                    stroke="#444450"
+                    strokeWidth="1.5"
                   />
                   <text
                     x={x}
-                    y={padding.top + innerHeight + 18}
-                    fill={isHovered ? '#00f0ff' : '#94a3b8'}
+                    y={padding.top + innerHeight + 20}
+                    fill={isHovered ? '#ffe600' : '#888896'}
                     fontSize="10"
                     textAnchor="middle"
                     fontFamily="monospace"
+                    fontWeight="bold"
                   >
                     {date.slice(5)}
                   </text>
@@ -481,7 +494,6 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
 
             {/* Price lines */}
             {activeChartTab === 'compare' ? (
-              // Multi-market comparison lines
               markets.map((m) => {
                 const points = sortedDates
                   .map((date, idx) => {
@@ -500,10 +512,8 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
                       points={points}
                       fill="none"
                       stroke={marketColors[m.id] || '#64748b'}
-                      strokeWidth={isKeelung ? '3' : '1.5'}
-                      strokeOpacity={isKeelung ? '1' : '0.75'}
+                      strokeWidth={isKeelung ? '3.5' : '1.5'}
                     />
-                    {/* Circle dots */}
                     {sortedDates.map((date, idx) => {
                       const rec = marketDateMap[date]?.[m.id];
                       if (!rec) return null;
@@ -517,9 +527,8 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
                           cy={cy}
                           r={isHovered ? (isKeelung ? '6' : '4') : isKeelung ? '4' : '2'}
                           fill={marketColors[m.id] || '#64748b'}
-                          stroke="#0f172a"
+                          stroke="#000000"
                           strokeWidth="1.5"
-                          className="transition-all"
                         />
                       );
                     })}
@@ -527,7 +536,6 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
                 );
               })
             ) : (
-              // Band Chart (Keelung High-Mid-Low Band)
               (() => {
                 const highPoints = sortedDates
                   .map((date, idx) => {
@@ -556,32 +564,28 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
 
                 return (
                   <g>
-                    {/* Shaded Area between High & Low */}
                     <polygon
                       points={bandPolygon}
-                      fill="#00f0ff"
-                      fillOpacity="0.12"
+                      fill="#e60012"
+                      fillOpacity="0.18"
                     />
-                    {/* High Price Line */}
                     <polyline
                       points={highPoints.join(' ')}
                       fill="none"
-                      stroke="#fb7185"
+                      stroke="#ffffff"
                       strokeWidth="2"
                     />
-                    {/* Low Price Line */}
                     <polyline
                       points={lowPointsReversed.reverse().join(' ')}
                       fill="none"
-                      stroke="#60a5fa"
+                      stroke="#00e5ff"
                       strokeWidth="2"
                     />
-                    {/* Avg Price Line */}
                     <polyline
                       points={avgPoints}
                       fill="none"
-                      stroke="#00f0ff"
-                      strokeWidth="3"
+                      stroke="#ffe600"
+                      strokeWidth="3.5"
                     />
                   </g>
                 );
@@ -609,30 +613,28 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
           </svg>
         </div>
 
-        {/* Hovered Date Detailed Breakdown Bar */}
+        {/* Hover inspection box */}
         {hoveredDate && marketDateMap[hoveredDate] && (
-          <div className="mt-4 p-3 bg-slate-950 rounded-xl border border-cyan-800/40 text-xs flex flex-wrap items-center justify-between gap-3 animate-fadeIn">
+          <div className="mt-3 p-3 bg-black border border-[#e60012] font-mono text-xs flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-cyan-400" />
-              <span className="font-bold text-white font-mono">{hoveredDate}</span>
-              <span className="text-slate-400">當日拍賣詳情：</span>
+              <Calendar className="w-4 h-4 text-[#ffe600]" />
+              <span className="font-black text-white">{hoveredDate}</span>
+              <span className="text-zinc-500">// 當日行情：</span>
             </div>
             <div className="flex flex-wrap items-center gap-4">
               {markets.map((m) => {
                 const rec = marketDateMap[hoveredDate][m.id];
                 if (!rec) return null;
                 return (
-                  <div key={m.id} className="flex items-center gap-1.5 font-mono">
-                    <span className="text-slate-400">{m.name.split(' (')[0]}:</span>
+                  <div key={m.id} className="flex items-center gap-1.5">
+                    <span className="text-zinc-400">{m.name.split(' (')[0]}:</span>
                     <span
-                      className="font-bold"
+                      className="font-black"
                       style={{ color: marketColors[m.id] || '#ffffff' }}
                     >
                       NT${rec.avg_price}
                     </span>
-                    <span className="text-[10px] text-slate-500">
-                      ({rec.trade_volume}kg)
-                    </span>
+                    <span className="text-[10px] text-zinc-500">({rec.trade_volume}kg)</span>
                   </div>
                 );
               })}
@@ -641,52 +643,66 @@ export const MarketRadarView: React.FC<MarketRadarViewProps> = ({
         )}
       </div>
 
-      {/* Anomaly Event Detection Banner */}
-      {recentAnomalies.length > 0 && (
-        <div className="bg-rose-950/40 border border-rose-800/60 rounded-2xl p-4.5">
-          <div className="flex items-start gap-3">
-            <div className="p-2 bg-rose-500/20 rounded-xl text-rose-400 shrink-0">
-              <AlertTriangle className="w-5 h-5" />
+      {/* P5X Stylized Algorithm Specification Card */}
+      <div className="bg-[#121216] border-2 border-[#e60012] p-5 shadow-[6px_6px_0px_#000000]">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-800">
+          <div className="flex items-center gap-2 font-mono">
+            <div className="bg-[#e60012] text-white p-1 -skew-x-12">
+              <Calculator className="w-4 h-4 skew-x-12" />
             </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <h4 className="font-bold text-rose-200 text-sm">
-                  漁產品價量異常檢測警報 (Z-Score & Volatility Alert)
-                </h4>
-                <span className="text-[10px] bg-rose-900/60 text-rose-300 px-2 py-0.5 rounded font-mono">
-                  統計置信度 &gt; 99%
-                </span>
-              </div>
-              <p className="text-xs text-rose-300/90 leading-relaxed">
-                於 <span className="font-mono font-bold text-white">{recentAnomalies[0].trade_date}</span> 在{' '}
-                <span className="font-semibold text-white">{recentAnomalies[0].market_name}</span> 偵測到{' '}
-                <span className="font-semibold text-white">{currentFish.name}</span> 發生{' '}
-                <span className="font-mono text-white font-bold">{recentAnomalies[0].anomaly_flag}</span> 事件（偏離指標 Z={recentAnomalies[0].anomaly_score}σ）。
-                可能成因包括北方三島海象海況惡化船隻無法出海、或大型扒網船爆量卸魚，建議採購端啟動庫存調節或跨市場轉單。
-              </p>
-            </div>
+            <h3 className="text-base font-black text-white tracking-tight uppercase">
+              ALGORITHM CORE // 漲跌與異常預警算法詳解
+            </h3>
           </div>
+          <span className="text-xs font-mono text-[#ffe600] font-bold">
+            STATISTICAL MODEL SPEC
+          </span>
         </div>
-      )}
 
-      {/* Keelung Fishery Heritage & Local Relevance Card */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5">
-        <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
-          <Fish className="w-4 h-4 text-cyan-400" />
-          <span>基隆試點產地背景與漁法脈絡：{currentFish.name}</span>
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-300">
-          <div className="p-3 bg-slate-950/50 rounded-xl border border-slate-800/80">
-            <span className="text-slate-400 block mb-1">漁獲作業方式 (Gear Type)</span>
-            <span className="font-semibold text-white">{currentFish.gear_type || '近海作業'}</span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+          {/* Formula 1 */}
+          <div className="bg-black p-4 border border-zinc-800 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-black text-[#e60012] text-sm">// 01 DAILY RETURN</span>
+              <span className="text-[10px] text-zinc-500">前一交易日基準</span>
+            </div>
+            <div className="p-2.5 bg-[#18181c] border border-zinc-700 font-mono text-[11px] text-white font-bold">
+              ΔP = P_t - P_prev<br />
+              漲跌幅(%) = (ΔP / P_prev) × 100%
+            </div>
+            <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
+              排除傳統公休日（農曆初二、十六休市與每週一休市）的假性斷點，精準錨定前一實際有效拍賣日之成交均價。
+            </p>
           </div>
-          <div className="p-3 bg-slate-950/50 rounded-xl border border-slate-800/80">
-            <span className="text-slate-400 block mb-1">產季與時令特徵 (Seasonality)</span>
-            <span className="font-semibold text-cyan-300">{currentFish.seasonality}</span>
+
+          {/* Formula 2 */}
+          <div className="bg-black p-4 border border-zinc-800 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-black text-[#ffe600] text-sm">// 02 ROLLING Z-SCORE</span>
+              <span className="text-[10px] text-zinc-500">時序異常檢測</span>
+            </div>
+            <div className="p-2.5 bg-[#18181c] border border-zinc-700 font-mono text-[11px] text-white font-bold">
+              Z = (P_t - μ_14) / σ_14<br />
+              觸發門檻：|Z| ≥ 2.5σ
+            </div>
+            <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
+              計算 14 天滾動平均與標準差；若偏離大於 2.5 個標準差（常態機率 &lt; 1%），標定為海象惡劣停捕暴漲或大卸魚爆量。
+            </p>
           </div>
-          <div className="p-3 bg-slate-950/50 rounded-xl border border-slate-800/80">
-            <span className="text-slate-400 block mb-1">基隆在地產業連結</span>
-            <span className="text-slate-200">{currentFish.keelung_relevance}</span>
+
+          {/* Formula 3 */}
+          <div className="bg-black p-4 border border-zinc-800 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-black text-white text-sm">// 03 ARBITRAGE SPREAD</span>
+              <span className="text-[10px] text-zinc-500">跨市場套利</span>
+            </div>
+            <div className="p-2.5 bg-[#18181c] border border-zinc-700 font-mono text-[11px] text-white font-bold">
+              Spread = P_KL - min(P_others)<br />
+              套利率(%) = (Spread / min) × 100%
+            </div>
+            <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
+              以基隆崁仔頂市場為消費地核心，計算與南方澳、前鎮等產地之冷鏈差價，超過 15 元/kg 提示跨市場調度套利機會。
+            </p>
           </div>
         </div>
       </div>

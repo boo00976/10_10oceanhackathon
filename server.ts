@@ -42,14 +42,16 @@ interface FishPriceRecord {
 }
 
 const FISH_SPECIES_INFO = [
-  { id: '1010', name: '白帶魚', rawNames: ['白帶', '肥帶', '油帶', '鮮白帶魚', '白帶魚(中)'], category: '近海捕撈', seasonality: '秋冬盛產', esg_status: '綠燈/當季盛產' },
-  { id: '1020', name: '鎖管 (透抽)', rawNames: ['透抽', '鎖管', '中卷', '小卷', '真鎖管'], category: '近海捕撈', seasonality: '夏秋盛產 (基隆鎖管季)', esg_status: '黃燈/注意捕撈體長' },
-  { id: '1030', name: '花腹鯖 (花飛)', rawNames: ['花飛', '鯖魚', '花腹鯖', '青飛'], category: '近海捕撈', seasonality: '冬春盛產 (北方三島)', esg_status: '綠燈/永續食用' },
-  { id: '1040', name: '黃雞魚', rawNames: ['黃雞', '黃雞魚', '三線磯鱸'], category: '沿岸/定置網', seasonality: '全年/春夏佳', esg_status: '綠燈/在地捕撈' },
-  { id: '1050', name: '鬼頭刀 (鱰魚)', rawNames: ['鬼頭刀', '鱰魚', '飛烏虎', 'Mahi-mahi'], category: '近海/延繩釣', seasonality: '春秋洄游', esg_status: '綠燈/MSC生態標章推動中' },
-  { id: '1060', name: '午仔魚', rawNames: ['午仔', '四破', '午仔魚(養殖)', '竹午'], category: '海面養殖', seasonality: '全年', esg_status: '綠燈/在地養殖' },
-  { id: '1070', name: '龍膽石斑', rawNames: ['石斑', '龍膽', '龍膽石斑', '鞍帶石斑'], category: '內陸/海面養殖', seasonality: '全年', esg_status: '綠燈/高經濟產值' },
-  { id: '1080', name: '赤鯮', rawNames: ['赤鯮', '黃牙鯛', '真鯛赤鯮'], category: '近海底棲', seasonality: '冬春盛產', esg_status: '黃燈/價格高檔稀缺' },
+  { id: '1010', name: '白帶魚', north_south_names: '北：肥帶 / 南：油帶', rawNames: ['白帶', '肥帶', '油帶', '鮮白帶魚', '白帶魚(中)'], category: '近海捕撈 (北部主力)', seasonality: '秋冬盛產', esg_status: '綠燈/當季盛產' },
+  { id: '1020', name: '鎖管 (透抽)', north_south_names: '北：透抽、小卷 / 南：中卷、槍烏賊', rawNames: ['透抽', '鎖管', '中卷', '小卷', '真鎖管'], category: '近海捕撈 (北部主力)', seasonality: '夏秋盛產 (基隆鎖管季)', esg_status: '黃燈/注意捕撈體長' },
+  { id: '1030', name: '花腹鯖 (鯖魚)', north_south_names: '北：花飛 / 南：青飛、花鯖', rawNames: ['花飛', '鯖魚', '花腹鯖', '青飛'], category: '近海捕撈 (北部/東北)', seasonality: '冬春盛產 (北方三島)', esg_status: '綠燈/永續食用' },
+  { id: '1040', name: '黃雞魚', north_south_names: '北：黃雞 / 南：三線雞仔', rawNames: ['黃雞', '黃雞魚', '三線磯鱸'], category: '沿岸/定置網 (北部)', seasonality: '全年/春夏佳', esg_status: '綠燈/在地捕撈' },
+  { id: '1050', name: '鬼頭刀', north_south_names: '北：飛烏虎 / 南：鱰魚、Mahi', rawNames: ['鬼頭刀', '鱰魚', '飛烏虎', 'Mahi-mahi'], category: '近海/延繩釣 (東北角)', seasonality: '春秋洄游', esg_status: '綠燈/MSC生態標章' },
+  { id: '1080', name: '赤鯮', north_south_names: '北：赤鯮 / 南：黃牙鯛、赤松', rawNames: ['赤鯮', '黃牙鯛', '真鯛赤鯮'], category: '近海底棲 (彭佳嶼)', seasonality: '秋冬盛產', esg_status: '黃燈/價格高檔稀缺' },
+  { id: '1090', name: '刺鯧 (肉魚)', north_south_names: '北：肉魚 / 南：肉鯽仔', rawNames: ['肉魚', '刺鯧', '肉鯽仔'], category: '近海捕撈 (北部底棲)', seasonality: '秋冬盛產', esg_status: '綠燈/家常當季鮮食' },
+  { id: '1100', name: '黑鯛 (黑格)', north_south_names: '北：黑格 / 南：烏格', rawNames: ['黑格', '烏格', '黑鯛'], category: '沿岸/一支釣 (北部沿岸)', seasonality: '秋冬春盛產', esg_status: '綠燈/在地沿岸礁岩' },
+  { id: '1110', name: '藍圓鰺 (巴隆)', north_south_names: '北：巴隆 / 南：硬尾、竹筴魚', rawNames: ['巴隆', '硬尾', '竹筴魚', '藍圓鰺'], category: '近海捕撈 (北部大宗)', seasonality: '全年/春夏佳', esg_status: '綠燈/高蛋白低碳' },
+  { id: '1120', name: '馬加鰆 (馬加)', north_south_names: '北：馬加 / 南：白腹、土魠', rawNames: ['馬加', '土魠', '白腹仔', '馬加鰆'], category: '近海洄游 (北部沿岸)', seasonality: '冬春盛產', esg_status: '綠燈/秋冬肥美' },
 ];
 
 const MARKETS = [
@@ -70,9 +72,11 @@ function generateSeedPrices(): FishPriceRecord[] {
     '1030': { baseAvg: 95,  volBase: 8500, volatility: 0.12 }, // 鯖魚
     '1040': { baseAvg: 240, volBase: 1200, volatility: 0.15 }, // 黃雞魚
     '1050': { baseAvg: 165, volBase: 3600, volatility: 0.22 }, // 鬼頭刀
-    '1060': { baseAvg: 210, volBase: 2400, volatility: 0.10 }, // 午仔魚
-    '1070': { baseAvg: 380, volBase: 1500, volatility: 0.08 }, // 龍膽石斑
     '1080': { baseAvg: 420, volBase: 800,  volatility: 0.20 }, // 赤鯮
+    '1090': { baseAvg: 140, volBase: 3200, volatility: 0.14 }, // 肉魚
+    '1100': { baseAvg: 220, volBase: 1100, volatility: 0.16 }, // 黑格
+    '1110': { baseAvg: 85,  volBase: 6500, volatility: 0.15 }, // 巴隆
+    '1120': { baseAvg: 360, volBase: 900,  volatility: 0.22 }, // 馬加
   };
 
   const marketFactors: Record<string, number> = {

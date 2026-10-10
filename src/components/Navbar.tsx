@@ -1,11 +1,9 @@
 import React from 'react';
-import { Waves, Activity, Sparkles, Database, BarChart3, Award, Bot, RefreshCw } from 'lucide-react';
+import { RefreshCw, BarChart3, Database, Activity, Flame } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  demoMode: boolean;
-  setDemoMode: (val: boolean) => void;
   onRefreshData: () => void;
   isRefreshing: boolean;
 }
@@ -13,103 +11,104 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
-  demoMode,
-  setDemoMode,
   onRefreshData,
   isRefreshing,
 }) => {
   const tabs = [
-    { id: 'radar', label: '即時行情與比價雷達', icon: BarChart3, badge: '高頻微觀' },
-    { id: 'data-eng', label: '資料工程與品質實驗室', icon: Database, badge: 'RQ1~4' },
-    { id: 'macro-micro', label: '宏微觀跨尺度分析', icon: Activity, badge: 'CF0110/20' },
-    { id: 'pitch-deck', label: '黑客松商業企劃專區', icon: Award, badge: '2026競賽' },
-    { id: 'ai-advisor', label: 'Gemini 智慧海洋智庫', icon: Bot, badge: 'AI賦能' },
+    { id: 'radar', code: '01', label: '即時行情與市場雷達', en: 'MARKET RADAR', icon: BarChart3 },
+    { id: 'data-eng', code: '02', label: '資料工程與品質實驗室', en: 'ETL QUALITY LAB', icon: Database },
+    { id: 'macro-micro', code: '03', label: '宏微觀生產量產值分析', en: 'MACRO CROSS-SCALE', icon: Activity },
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-cyan-900/40 text-slate-100">
-      {/* Top Banner: Hackathon & Pilot Announcement */}
-      <div className="bg-gradient-to-r from-cyan-950 via-slate-900 to-blue-950 px-4 py-1.5 border-b border-cyan-800/30 text-xs">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-            </span>
-            <span className="font-medium text-cyan-300">2026 臺灣海洋黑客松競賽專案</span>
-            <span className="text-slate-400 hidden sm:inline">·</span>
-            <span className="text-slate-300 hidden sm:inline">以基隆市場（崁仔頂/八斗子）為核心試點，跨尺度串接全台開放資料</span>
-          </div>
+    <header className="sticky top-0 z-50 bg-[#0c0c0e] border-b-2 border-[#e60012] text-white shadow-[0_6px_20px_rgba(0,0,0,0.8)] relative overflow-hidden">
+      {/* Top Graphic Caution Stripe (P5X signature black & yellow/red tape) */}
+      <div className="bg-[#e60012] text-black px-4 py-1 text-xs font-black tracking-wider flex items-center justify-between font-mono select-none">
+        <div className="flex items-center gap-2">
+          <span className="bg-black text-[#ffe600] px-1.5 py-0.2 text-[10px] uppercase font-black -skew-x-12">
+            TAIWAN OCEAN HACKATHON
+          </span>
+          <span className="text-white font-black tracking-widest text-[11px] hidden sm:inline">
+            // FISHDATA-TW · PHANTOM X PROTOCOL · KEELUNG ANCHOR
+          </span>
+        </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onRefreshData}
-              disabled={isRefreshing}
-              className="flex items-center gap-1.5 text-slate-300 hover:text-cyan-300 transition-colors py-0.5 px-2 rounded cursor-pointer"
-              title="重新同步開放資料快照"
-            >
-              <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin text-cyan-400' : ''}`} />
-              <span className="text-[11px] font-mono">Sync API</span>
-            </button>
-
-            <button
-              onClick={() => setDemoMode(!demoMode)}
-              className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[11px] font-medium transition-all cursor-pointer ${
-                demoMode
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                  : 'bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700'
-              }`}
-            >
-              <Sparkles className="w-3 h-3 text-amber-400" />
-              <span>{demoMode ? '評審簡報 Demo 模式: ON' : '切換評審展示模式'}</span>
-            </button>
-          </div>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-bold text-white uppercase hidden md:inline">
+            PILOT: 崁仔頂 / 八斗子夜間鮮魚拍賣
+          </span>
+          <button
+            onClick={onRefreshData}
+            disabled={isRefreshing}
+            className="flex items-center gap-1.5 bg-black text-[#ffe600] hover:bg-[#ffe600] hover:text-black transition-colors px-2.5 py-0.5 rounded-none font-black text-[11px] cursor-pointer -skew-x-12"
+          >
+            <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span>SYNC DATA</span>
+          </button>
         </div>
       </div>
 
-      {/* Main Header Row */}
+      {/* Main Header Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo & Branding */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center shadow-lg shadow-cyan-500/20 border border-cyan-400/40">
-              <Waves className="w-6 h-6 text-white" />
+        <div className="flex items-center justify-between h-18">
+          {/* P5X Stylized Brand Logo */}
+          <div
+            onClick={() => setActiveTab('radar')}
+            className="flex items-center gap-3 cursor-pointer group select-none"
+          >
+            {/* Iconic Flame / Mask Box */}
+            <div className="w-11 h-11 bg-[#e60012] text-white flex items-center justify-center -skew-x-12 shadow-[3px_3px_0px_#ffffff] group-hover:bg-[#ffe600] group-hover:text-black transition-all">
+              <Flame className="w-6 h-6 skew-x-12" />
             </div>
+
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg sm:text-xl tracking-tight text-white font-['Plus_Jakarta_Sans']">
-                  FishData<span className="text-cyan-400">-TW</span>
-                </span>
-                <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800/60 font-semibold">
-                  Keelung Pilot v2.6
+                <span className="text-xl sm:text-2xl font-black italic tracking-tighter uppercase font-['Plus_Jakarta_Sans'] text-white">
+                  FISH<span className="text-[#e60012] group-hover:text-[#ffe600] transition-colors">DATA</span>
+                  <span className="text-xs bg-white text-black px-1.5 py-0.2 ml-1.5 font-mono font-black not-italic -skew-x-12">
+                    P5X
+                  </span>
                 </span>
               </div>
-              <p className="text-xs text-slate-400 truncate hidden md:block">
-                台灣智慧漁業開放資料整合 · 品質評估 · 跨尺度產銷決策
+              <p className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase hidden sm:block">
+                智慧漁業開放資料 // 即時市場雷達與算法中樞
               </p>
             </div>
           </div>
 
-          {/* Navigation Items (Zero-pill, clean active borders) */}
-          <nav className="flex items-center gap-1 sm:gap-2">
+          {/* Dynamic Slanted Navigation Tabs (Persona 5 style) */}
+          <nav className="flex items-center gap-2 sm:gap-3">
             {tabs.map((tab) => {
-              const Icon = tab.icon;
               const isActive = activeTab === tab.id;
+              const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-3 py-2 text-xs sm:text-sm font-medium transition-all cursor-pointer relative ${
+                  className={`relative flex items-center gap-2 px-3 sm:px-4 py-2 font-black transition-all cursor-pointer -skew-x-12 ${
                     isActive
-                      ? 'text-cyan-300'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-lg'
+                      ? 'bg-[#e60012] text-white shadow-[4px_4px_0px_#ffffff]'
+                      : 'bg-[#18181c] text-zinc-300 hover:bg-[#25252b] hover:text-white border border-zinc-800'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
-                  <span>{tab.label}</span>
-                  {isActive && (
-                    <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full" />
-                  )}
+                  <div className="skew-x-12 flex items-center gap-2">
+                    <span
+                      className={`text-[10px] font-mono px-1 py-0.2 font-black ${
+                        isActive ? 'bg-black text-[#ffe600]' : 'bg-zinc-800 text-zinc-400'
+                      }`}
+                    >
+                      {tab.code}
+                    </span>
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-[#ffe600]' : 'text-zinc-400'}`} />
+                    <div className="text-left">
+                      <div className="text-xs sm:text-sm font-bold tracking-tight">
+                        {tab.label}
+                      </div>
+                      <div className={`text-[9px] font-mono uppercase tracking-wider hidden lg:block ${isActive ? 'text-black font-black' : 'text-zinc-500'}`}>
+                        {tab.en}
+                      </div>
+                    </div>
+                  </div>
                 </button>
               );
             })}
