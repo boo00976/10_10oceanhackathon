@@ -8,25 +8,27 @@ import { Navbar } from './components/Navbar';
 import { MarketRadarView } from './components/MarketRadarView';
 import { DataEngineeringView } from './components/DataEngineeringView';
 import { MacroMicroView } from './components/MacroMicroView';
+import { VesselRadarView } from './components/VesselRadarView';
 import { FishPriceRecord, MarketInfo, FishSpecies, AnnualProductionItem, FishermenAssociation, DataQualityReport } from './types/fishery';
 import { SPECIES_CATALOG, MARKETS_CATALOG } from './types/fisheryConstants';
+import { getFishPrices, ANNUAL_PRODUCTION_DATA, FISHERMEN_ASSOCIATIONS, DATA_QUALITY_METRICS } from './services/fisheryService';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('radar'); // Default: 即時行情與市場雷達 (Market Radar)
-  const [prices, setPrices] = useState<FishPriceRecord[]>([]);
+  const [prices, setPrices] = useState<FishPriceRecord[]>(() => getFishPrices());
   const [markets, setMarkets] = useState<MarketInfo[]>(MARKETS_CATALOG);
   const [species, setSpecies] = useState<FishSpecies[]>(SPECIES_CATALOG);
-  const [annualData, setAnnualData] = useState<AnnualProductionItem[]>([]);
-  const [associations, setAssociations] = useState<FishermenAssociation[]>([]);
-  const [qualityReport, setQualityReport] = useState<DataQualityReport | null>(null);
+  const [annualData, setAnnualData] = useState<AnnualProductionItem[]>(ANNUAL_PRODUCTION_DATA);
+  const [associations, setAssociations] = useState<FishermenAssociation[]>(FISHERMEN_ASSOCIATIONS);
+  const [qualityReport, setQualityReport] = useState<DataQualityReport | null>(DATA_QUALITY_METRICS);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [isTestingPipeline, setIsTestingPipeline] = useState<boolean>(false);
 
-  // Load foundational data
+  // Load or sync data
   const loadData = async () => {
     setIsRefreshing(true);
     try {
-      // 1. Fetch Prices
+      // 嘗試調用 API；若純前端模式則直接同步本地服務數據
       const pRes = await fetch('/api/fish/prices');
       if (pRes.ok) {
         const pData = await pRes.json();
@@ -35,30 +37,14 @@ export default function App() {
           if (pData.markets) setMarkets(pData.markets);
           if (pData.species) setSpecies(pData.species);
         }
+      } else {
+        setPrices(getFishPrices());
       }
-
-      // 2. Fetch Annual Production
-      const prodRes = await fetch('/api/fish/annual-production');
-      if (prodRes.ok) {
-        const prodData = await prodRes.json();
-        if (prodData.data) setAnnualData(prodData.data);
-      }
-
-      // 3. Fetch Fishermen Associations
-      const faRes = await fetch('/api/fish/associations');
-      if (faRes.ok) {
-        const faData = await faRes.json();
-        if (faData.data) setAssociations(faData.data);
-      }
-
-      // 4. Fetch Quality Report
-      const qRes = await fetch('/api/fish/quality-report');
-      if (qRes.ok) {
-        const qData = await qRes.json();
-        if (qData.data) setQualityReport(qData.data);
-      }
-    } catch (err) {
-      console.warn('Using client memory cache fallback:', err);
+    } catch {
+      setPrices(getFishPrices());
+      setAnnualData(ANNUAL_PRODUCTION_DATA);
+      setAssociations(FISHERMEN_ASSOCIATIONS);
+      setQualityReport(DATA_QUALITY_METRICS);
     } finally {
       setIsRefreshing(false);
     }
@@ -115,6 +101,13 @@ export default function App() {
           <MacroMicroView
             annualData={annualData}
             associations={associations}
+          />
+        )}
+
+        {/* Tab 4: Vessel Radar (GFW AIS Telemetry - main.py Python integration) */}
+        {activeTab === 'vessel' && (
+          <VesselRadarView
+            onLinkToMarketRadar={() => setActiveTab('radar')}
           />
         )}
       </main>

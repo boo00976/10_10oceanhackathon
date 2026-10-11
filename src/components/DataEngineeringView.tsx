@@ -32,35 +32,76 @@ export const DataEngineeringView: React.FC<DataEngineeringViewProps> = ({
     category: '近海捕撈 (北部主力)',
   });
 
-  // Alias lookup dictionary
+  // Alias lookup dictionary (Multi-tier Taxonomic & Vernacular Database)
   const aliasDatabase: Record<
     string,
     { normalized: string; fao: string; sci: string; strat: string; cat: string; conf: number }
   > = {
-    '肥帶': { normalized: '白帶魚', fao: 'LHA', sci: 'Trichiurus lepturus', strat: '北部崁仔頂俗名映射表 (肥帶：北部特大白帶)', cat: '近海捕撈 (北部主力)', conf: 99.8 },
+    // 白帶魚系列
+    '白帶魚': { normalized: '白帶魚', fao: 'LHA', sci: 'Trichiurus lepturus', strat: '農業部標準魚貨名稱 (Exact Standard)', cat: '近海捕撈 (北部主力)', conf: 100.0 },
+    '白帶': { normalized: '白帶魚', fao: 'LHA', sci: 'Trichiurus lepturus', strat: '簡稱補全 (Prefix Match)', cat: '近海捕撈 (北部主力)', conf: 99.9 },
+    '肥帶': { normalized: '白帶魚', fao: 'LHA', sci: 'Trichiurus lepturus', strat: '北部崁仔頂俗名映射表 (肥帶：特大規格白帶)', cat: '近海捕撈 (北部主力)', conf: 99.8 },
     '油帶': { normalized: '白帶魚 (南部油帶)', fao: 'LHA', sci: 'Trichiurus lepturus', strat: '南部俗名異體詞正規化', cat: '近海捕撈', conf: 99.4 },
-    '白帶': { normalized: '白帶魚', fao: 'LHA', sci: 'Trichiurus lepturus', strat: '簡稱補全 (Prefix Match)', cat: '近海捕撈', conf: 100.0 },
-    '透抽': { normalized: '鎖管 (劍尖槍烏賊)', fao: 'SQA', sci: 'Uroteuthis edulis', strat: '北部俗稱 (透抽) 映射標準名', cat: '近海捕撈 (棒受網)', conf: 99.7 },
-    '中卷': { normalized: '鎖管 (中卷)', fao: 'SQA', sci: 'Uroteuthis edulis', strat: '南部與拍賣市場分級辭典映射', cat: '近海捕撈', conf: 99.5 },
+
+    // 鎖管系列
+    '鎖管': { normalized: '鎖管 (劍尖槍烏賊)', fao: 'SQA', sci: 'Uroteuthis edulis', strat: '農業部水產名錄標準名', cat: '近海捕撈 (棒受網)', conf: 100.0 },
+    '透抽': { normalized: '鎖管 (劍尖槍烏賊)', fao: 'SQA', sci: 'Uroteuthis edulis', strat: '北部基隆/宜蘭俗稱 (透抽) 映射標準名', cat: '近海捕撈 (棒受網)', conf: 99.7 },
+    '中卷': { normalized: '鎖管 (中卷)', fao: 'SQA', sci: 'Uroteuthis edulis', strat: '南部與拍賣市場中體長分級辭典映射', cat: '近海捕撈', conf: 99.5 },
     '小卷': { normalized: '鎖管 (幼體小卷)', fao: 'SQA', sci: 'Uroteuthis edulis', strat: '北部基隆鎖管商品名轉換', cat: '近海捕撈', conf: 99.5 },
+    '小管': { normalized: '鎖管 (小管)', fao: 'SQA', sci: 'Uroteuthis edulis', strat: '澎湖/基隆在地慣用名對照', cat: '近海捕撈', conf: 99.6 },
+    '真鎖管': { normalized: '鎖管 (劍尖槍烏賊)', fao: 'SQA', sci: 'Uroteuthis edulis', strat: '學名直譯商品名正規化', cat: '近海捕撈', conf: 99.8 },
+
+    // 花腹鯖系列
+    '鯖魚': { normalized: '花腹鯖 (鯖魚)', fao: 'MAS', sci: 'Scomber australasicus', strat: '標準大宗俗稱歸納', cat: '近海捕撈 (扒網)', conf: 99.8 },
+    '花腹鯖': { normalized: '花腹鯖 (鯖魚)', fao: 'MAS', sci: 'Scomber australasicus', strat: '農業部標準魚貨名稱', cat: '近海捕撈 (扒網)', conf: 100.0 },
     '花飛': { normalized: '花腹鯖 (鯖魚)', fao: 'MAS', sci: 'Scomber australasicus', strat: '北部基隆/南方澳常見漁民俗稱', cat: '近海捕撈 (扒網)', conf: 99.6 },
     '青飛': { normalized: '白腹鯖', fao: 'MAS', sci: 'Scomber japonicus', strat: '南部/東部同屬近緣種分類正規化', cat: '近海捕撈', conf: 98.9 },
+
+    // 黃雞魚系列
+    '黃雞魚': { normalized: '黃雞魚 (三線磯鱸)', fao: 'PAR', sci: 'Parapristipoma trilineatum', strat: '農業部標準魚貨名稱', cat: '沿岸/定置網', conf: 100.0 },
     '黃雞': { normalized: '黃雞魚 (三線磯鱸)', fao: 'PAR', sci: 'Parapristipoma trilineatum', strat: '北部沿岸俗稱後綴補齊', cat: '沿岸/定置網', conf: 99.8 },
+
+    // 鬼頭刀系列
+    '鬼頭刀': { normalized: '鬼頭刀 (鱰魚)', fao: 'DOL', sci: 'Coryphaena hippurus', strat: 'FAO標準名錄及大洋洄游標記', cat: '近海/延繩釣', conf: 100.0 },
     '飛烏虎': { normalized: '鬼頭刀 (鱰魚)', fao: 'DOL', sci: 'Coryphaena hippurus', strat: '北部基隆外海俗名 (飛魚殺手)', cat: '近海/延繩釣', conf: 99.2 },
+    '鱰魚': { normalized: '鬼頭刀 (鱰魚)', fao: 'DOL', sci: 'Coryphaena hippurus', strat: '傳統水產圖鑑學名映射', cat: '近海/延繩釣', conf: 99.4 },
+
+    // 刺鯧系列
+    '刺鯧': { normalized: '刺鯧 (肉魚)', fao: 'PUM', sci: 'Psenopsis anomala', strat: '農業部標準魚貨名稱', cat: '近海捕撈 (北部底棲)', conf: 100.0 },
     '肉魚': { normalized: '刺鯧 (肉魚)', fao: 'PUM', sci: 'Psenopsis anomala', strat: '北部家常名正規化為刺鯧', cat: '近海捕撈 (北部底棲)', conf: 99.7 },
     '肉鯽仔': { normalized: '刺鯧 (肉鯽仔)', fao: 'PUM', sci: 'Psenopsis anomala', strat: '南部/閩南語俗稱對應', cat: '近海捕撈', conf: 99.4 },
+
+    // 黑鯛系列
+    '黑鯛': { normalized: '黑鯛 (黑格)', fao: 'SBX', sci: 'Acanthopagrus schlegelii', strat: '農業部標準魚貨名稱', cat: '沿岸漁業', conf: 100.0 },
     '黑格': { normalized: '黑鯛 (黑格)', fao: 'SBX', sci: 'Acanthopagrus schlegelii', strat: '北部礁岩磯釣俗稱對照', cat: '沿岸漁業', conf: 99.5 },
     '烏格': { normalized: '黑鯛 (烏格)', fao: 'SBX', sci: 'Acanthopagrus schlegelii', strat: '南部俗名異體映射', cat: '沿岸漁業', conf: 99.2 },
+
+    // 藍圓鰺系列
+    '藍圓鰺': { normalized: '藍圓鰺 (巴隆)', fao: 'RUS', sci: 'Decapterus maruadsi', strat: '農業部標準魚貨名稱', cat: '近海捕撈 (北部大宗)', conf: 100.0 },
     '巴隆': { normalized: '藍圓鰺 (巴隆)', fao: 'RUS', sci: 'Decapterus maruadsi', strat: '北部彭佳嶼大宗漁獲俗名映射', cat: '近海捕撈', conf: 99.6 },
     '硬尾': { normalized: '藍圓鰺 (硬尾)', fao: 'RUS', sci: 'Decapterus maruadsi', strat: '南部與西南部俗名映射', cat: '近海捕撈', conf: 99.3 },
+
+    // 馬加鰆系列
+    '馬加鰆': { normalized: '馬加鰆 (馬加)', fao: 'COM', sci: 'Scomberomorus commerson', strat: '農業部標準魚貨名稱', cat: '近海洄游', conf: 100.0 },
     '馬加': { normalized: '馬加鰆 (馬加)', fao: 'COM', sci: 'Scomberomorus commerson', strat: '北部冬季高價洄游魚對齊', cat: '近海洄游', conf: 99.5 },
     '土魠': { normalized: '康氏馬加鰆 (土魠)', fao: 'COM', sci: 'Scomberomorus commerson', strat: '南部俗稱對照', cat: '近海洄游', conf: 99.6 },
+
+    // 赤鯮系列
+    '赤鯮': { normalized: '赤鯮 (黃牙鯛)', fao: 'DEN', sci: 'Dentex tumifrons', strat: '北部崁仔頂傳統拍賣標準名', cat: '近海底棲 (彭佳嶼)', conf: 100.0 },
+    '黃牙鯛': { normalized: '赤鯮 (黃牙鯛)', fao: 'DEN', sci: 'Dentex tumifrons', strat: '南部與學術圖鑑俗名映射', cat: '近海底棲', conf: 99.5 },
+
+    // 其他常見水產擴充
+    '秋刀魚': { normalized: '秋刀魚', fao: 'PAC', sci: 'Cololabis saira', strat: '遠洋漁業主力標準名錄', cat: '遠洋漁業', conf: 100.0 },
+    '午仔魚': { normalized: '午仔魚 (四破午)', fao: 'POX', sci: 'Eleutheronema rhadinum', strat: '養殖魚種正規化', cat: '海面養殖', conf: 99.8 },
+    '石斑魚': { normalized: '龍膽/青斑 (石斑魚類)', fao: 'EPI', sci: 'Epinephelus spp.', strat: '高產值海水繁養殖分類', cat: '內陸/海面養殖', conf: 99.5 },
   };
 
+  // 階層式智能對齊演算法（Exact -> Stemming -> Substring -> Fallback）
   const handleRunAliasMatch = (term: string) => {
-    const cleanTerm = term.trim();
+    let cleanTerm = term.trim();
     if (!cleanTerm) return;
 
+    // 1. 第一階：直接精確比對
     if (aliasDatabase[cleanTerm]) {
       const match = aliasDatabase[cleanTerm];
       setMatchedResult({
@@ -72,17 +113,62 @@ export const DataEngineeringView: React.FC<DataEngineeringViewProps> = ({
         confidence: match.conf,
         category: match.cat,
       });
-    } else {
+      return;
+    }
+
+    // 2. 第二階：清洗常見修飾前綴（野生、現流、特大、本港、基隆、澎湖）
+    const prefixes = ['野生', '現流', '本港', '基隆', '澎湖', '南方澳', '特大', '大', '中', '小', '鮮', '活'];
+    let stripped = cleanTerm;
+    let detectedPrefix = '';
+    for (const p of prefixes) {
+      if (stripped.startsWith(p)) {
+        detectedPrefix = p;
+        stripped = stripped.slice(p.length).trim();
+        break;
+      }
+    }
+
+    if (stripped && aliasDatabase[stripped]) {
+      const match = aliasDatabase[stripped];
       setMatchedResult({
         raw: cleanTerm,
-        normalized: `${cleanTerm} (未收錄待人工核對標記)`,
-        faoCode: 'OTH (Unclassified)',
-        scientific: 'Species incertae sedis',
-        strategy: '未通過嚴格對齊，依據資料治理原則標記為待審核（禁止強制合併以防資料失真）',
-        confidence: 42.0,
-        category: '待人工覆核',
+        normalized: match.normalized,
+        faoCode: match.fao,
+        scientific: match.sci,
+        strategy: `前綴修飾符解析 [${detectedPrefix}] + 詞幹對齊字典`,
+        confidence: Number((match.conf - 0.5).toFixed(1)),
+        category: match.cat,
       });
+      return;
     }
+
+    // 3. 第三階：子字串模糊包容比對 (Substring Search)
+    const keys = Object.keys(aliasDatabase);
+    const matchedKey = keys.find((k) => cleanTerm.includes(k) || (k.length >= 2 && stripped.includes(k)));
+    if (matchedKey) {
+      const match = aliasDatabase[matchedKey];
+      setMatchedResult({
+        raw: cleanTerm,
+        normalized: match.normalized,
+        faoCode: match.fao,
+        scientific: match.sci,
+        strategy: `子詞幹模糊匹配 [${matchedKey}] -> 標準群類歸一化`,
+        confidence: 93.5,
+        category: match.cat,
+      });
+      return;
+    }
+
+    // 4. 第四階：未收錄項嚴格隔離標記（資料科學合規：禁止強行歸併以免資料失真）
+    setMatchedResult({
+      raw: cleanTerm,
+      normalized: `${cleanTerm} (未收錄待人工核對標記)`,
+      faoCode: 'OTH (Unclassified)',
+      scientific: 'Species incertae sedis',
+      strategy: '未通過嚴格對齊，依據資料治理原則標記為待審核（禁止強制合併以防資料失真）',
+      confidence: 35.0,
+      category: '待人工覆核',
+    });
   };
 
   return (
@@ -249,8 +335,8 @@ export const DataEngineeringView: React.FC<DataEngineeringViewProps> = ({
 
         {/* Quick click chips */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
-          <span className="text-xs font-mono font-bold text-zinc-400">QUICK SAMPLES:</span>
-          {['肥帶', '油帶', '透抽', '中卷', '花飛', '青飛', '黃雞', '飛烏虎', '肉魚', '肉鯽仔', '黑格', '烏格', '巴隆', '硬尾', '馬加', '土魠'].map((term) => (
+          <span className="text-xs font-mono font-bold text-zinc-400">QUICK SAMPLES (可直接點擊):</span>
+          {['白帶魚', '肥帶', '油帶', '透抽', '中卷', '小管', '花飛', '青飛', '黃雞', '飛烏虎', '肉魚', '肉鯽仔', '黑格', '烏格', '巴隆', '硬尾', '馬加', '土魠', '赤鯮', '秋刀魚', '午仔魚'].map((term) => (
             <button
               key={term}
               onClick={() => {
@@ -264,13 +350,16 @@ export const DataEngineeringView: React.FC<DataEngineeringViewProps> = ({
           ))}
         </div>
 
-        {/* Search input */}
+        {/* Search input with Enter key support */}
         <div className="flex gap-2 max-w-xl mb-4">
           <input
             type="text"
             value={testInput}
             onChange={(e) => setTestInput(e.target.value)}
-            placeholder="輸入測試字串，例如：肥帶、肉魚、黑格..."
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleRunAliasMatch(testInput);
+            }}
+            placeholder="可自由輸入任意字串（支援Enter送出），例如：本港肥帶、現流透抽、野生黑格..."
             className="w-full bg-black border border-zinc-700 px-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#e60012] font-mono"
           />
           <button
@@ -317,6 +406,43 @@ export const DataEngineeringView: React.FC<DataEngineeringViewProps> = ({
             </div>
           </div>
         )}
+      </div>
+
+      {/* Zero-Trust Security & Data Integrity Guardrail (P5X Styled) */}
+      <div className="bg-[#121216] border-2 border-[#ffe600] p-4.5 shadow-[4px_4px_0px_#000000]">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className="bg-[#ffe600] text-black font-black px-1.5 py-0.2 text-[10px] uppercase -skew-x-12">
+              ZERO-TRUST ARCHITECTURE
+            </span>
+            <h3 className="font-black text-white text-sm font-mono uppercase">
+              資安防錯原則：絕不信任前端傳入的未驗證資料 (Never Trust the Client)
+            </h3>
+          </div>
+          <span className="text-[10px] font-mono text-[#00e676] font-bold">
+            SERVER-AUTHORITATIVE
+          </span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono pt-2 border-t border-zinc-800 text-zinc-300">
+          <div className="bg-black p-3 border border-zinc-800">
+            <span className="text-[#e60012] font-black block mb-1">// 01 白名單嚴格校驗</span>
+            <p className="text-[11px] text-zinc-400 font-sans">
+              後端對所有市場代碼與魚種 ID 進行強制白名單比對，攔截非法參數篡改與惡意注入。
+            </p>
+          </div>
+          <div className="bg-black p-3 border border-zinc-800">
+            <span className="text-[#ffe600] font-black block mb-1">// 02 後端權威演算法</span>
+            <p className="text-[11px] text-zinc-400 font-sans">
+              均價、漲跌幅與 Z-Score 異常預警均由後端伺服器權威計算，前端僅負責視覺化呈現，杜絕客戶端竄改結果。
+            </p>
+          </div>
+          <div className="bg-black p-3 border border-zinc-800">
+            <span className="text-[#00e676] font-black block mb-1">// 03 快照數據防篡改</span>
+            <p className="text-[11px] text-zinc-400 font-sans">
+              自農業部開放資料 API 拉取的原始數據，在 Staging 階段比對數位指紋，確保產銷資訊真實合規。
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* E1 ~ E4 Experiments Benchmark Cards */}

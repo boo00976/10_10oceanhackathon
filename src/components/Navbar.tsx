@@ -1,5 +1,5 @@
 import React from 'react';
-import { RefreshCw, BarChart3, Database, Activity, Flame } from 'lucide-react';
+import { RefreshCw, BarChart3, Database, Activity, Flame, Navigation } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: string;
@@ -18,6 +18,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'radar', code: '01', label: '即時行情與市場雷達', en: 'MARKET RADAR', icon: BarChart3 },
     { id: 'data-eng', code: '02', label: '資料工程與品質實驗室', en: 'ETL QUALITY LAB', icon: Database },
     { id: 'macro-micro', code: '03', label: '宏微觀生產量產值分析', en: 'MACRO CROSS-SCALE', icon: Activity },
+    { id: 'vessel', code: '04', label: 'GFW 漁船與卸魚雷達 (main.py)', en: 'VESSEL TELEMETRY', icon: Navigation },
   ];
 
   return (

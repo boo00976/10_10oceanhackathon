@@ -88,3 +88,41 @@ export interface DataQualityReport {
     conclusion: string;
   }>;
 }
+
+export interface VesselDetail {
+  'Vessel ID': string;
+  '船名 (Ship Name)': string;
+  'MMSI': string;
+  '國籍 (Flag)': string;
+  'IMO'?: string;
+  'Gear Type'?: string;
+  'Length'?: string;
+  'Tonnage'?: string;
+}
+
+export interface VesselInsight {
+  vessel_id: string;
+  fishing_hours: number;
+  total_voyages: number;
+  main_eez: string;
+  avg_speed_knots: number;
+  target_species?: string;
+}
+
+export interface VesselEvent {
+  type: string;
+  start: string;
+  end: string;
+  port?: string;
+  description?: string;
+}
+
+export interface VesselQueryResponse {
+  mmsi: string;
+  start_date: string;
+  end_date: string;
+  vessel_details: VesselDetail[];
+  insights: VesselInsight[];
+  events: VesselEvent[];
+  source?: string;
+}
